@@ -1,49 +1,46 @@
-import { useMemo } from 'react';
+import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Col, Row, Typography } from 'antd';
 
 const { Title } = Typography;
 
 const LineChart = ({ coinHistory, currentPrice, coinName }) => {
-	const { data } = useMemo(() => {
-		const coinPrice = [];
-		const coinTimestamp = [];
-		const { history, change } = coinHistory?.data || {};
+	const coinPrice = [];
+	const coinTimestamp = [];
 
-		if (!history) return {};
+	for (let i = 0; i < coinHistory?.data?.history?.length; i += 1) {
+		coinPrice.push(coinHistory?.data?.history[i].price);
+	}
 
-		for (let i = 0; i < history.length; i += 1) {
-			coinPrice.push(history[i].price);
-			coinTimestamp.push(new Date(history[i].timestamp).toLocaleDateString());
-		}
+	for (let i = 0; i < coinHistory?.data?.history?.length; i += 1) {
+		coinTimestamp.push(
+			new Date(coinHistory?.data?.history[i].timestamp).toLocaleDateString()
+		);
+	}
+	const data = {
+		labels: coinTimestamp,
+		datasets: [
+			{
+				label: 'Price In USD',
+				data: coinPrice,
+				fill: false,
+				backgroundColor: '#0071bd',
+				borderColor: '#0071bd'
+			}
+		]
+	};
 
-		const data = {
-			labels: coinTimestamp,
-			datasets: [
+	const options = {
+		scales: {
+			yAxes: [
 				{
-					label: 'Price In USD',
-					data: coinPrice,
-					fill: false,
-					backgroundColor: '#0071bd',
-					borderColor: '#0071bd'
+					ticks: {
+						beginAtZero: true
+					}
 				}
 			]
-		};
-
-		const options = {
-			scales: {
-				yAxes: [
-					{
-						ticks: {
-							beginAtZero: true
-						}
-					}
-				]
-			}
-		};
-
-		return { data: { data, options }, change };
-	}, [coinHistory]);
+		}
+	};
 
 	return (
 		<>
@@ -53,14 +50,14 @@ const LineChart = ({ coinHistory, currentPrice, coinName }) => {
 				</Title>
 				<Col className="price-container">
 					<Title level={5} className="price-change">
-						Change: {data.change}%
+						Change: {coinHistory?.data?.change}%
 					</Title>
 					<Title level={5} className="current-price">
 						Current {coinName} Price: $ {currentPrice}
 					</Title>
 				</Col>
 			</Row>
-			<Line {...data} />
+			<Line data={data} options={options} />
 		</>
 	);
 };
