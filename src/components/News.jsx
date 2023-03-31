@@ -21,8 +21,6 @@ const News = ({ simplified }) => {
 
 	if (!cryptoNews?.value) return <Loader />;
 
-	console.log(data);
-
 	return (
 		<Row gutter={[24, 24]}>
 			{!simplified && (
